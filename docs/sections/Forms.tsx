@@ -26,7 +26,9 @@ export function Forms() {
 
       <p className="gallery-subhead">Dropdown</p>
       <div className="gallery-row" style={{ marginBottom: 24 }}>
-        <Dropdown trigger={() => <Button variant="secondary" size="sm">Actions ▾</Button>}>
+        {/* Dropdown renders its own button, so the trigger is a glyph. Passing a
+            Button here nests a button inside a button, which is invalid HTML. */}
+        <Dropdown trigger={(open) => <span aria-hidden>{open ? '×' : '⋯'}</span>}>
           <div style={{ padding: '8px 16px' }}>Log a note</div>
           <div style={{ padding: '8px 16px' }}>Schedule a review</div>
           <div style={{ padding: '8px 16px', color: 'var(--color-danger-ink)' }}>Remove from book</div>

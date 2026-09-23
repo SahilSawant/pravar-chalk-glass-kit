@@ -1,0 +1,782 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Pravar Chalk · Glass — the token layer.
+   Generated-equivalent to the product's own app/src/index.css. Change it
+   there first; this file is a copy, not a fork.
+   ───────────────────────────────────────────────────────────────────────── */
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PRAVAR AI — CHALK · GLASS
+   The token layer. Ported from the final designs:
+     ~/Downloads/Fiden Screens - Chalk Glass (standalone).html    (glass)
+     ~/Downloads/Fiden Screens - Light + Dark (standalone).html   (solid)
+   Both files embed the same tokens, so this is one system with two surface
+   treatments. Those files are the acceptance criteria; when this file and a
+   screen disagree, the HTML wins.
+
+   FOUR RULES THAT MUST SURVIVE EVERY EDIT
+
+   1. A NUMBER NEVER SITS ON GLASS. Valuations, allocations, percentages,
+      AUM, table cells, counts, dates, chart marks and axes all live on
+      --raised. Glass is for chrome and prose only.
+
+   2. BOTH THEMES ARE COMPLETE. No token may exist in one and not the other.
+      A token defined in only one theme silently renders the OTHER theme's
+      value — that is how a white-on-white chip shipped here once.
+
+   3. data-theme IS ALWAYS STAMPED, literally "light" or "dark". `system` is
+      resolved in JS (lib/theme.ts). Do NOT add a prefers-color-scheme block
+      that duplicates tokens — the duplication is what this replaced.
+
+   4. GLASS IS LIGHT-THEME ONLY. On dark the glass tokens resolve to opaque
+      --raised and --bloom-opacity is 0, so a glass component renders
+      correctly in both themes with no branch in the component.
+
+   ⚠ backdrop-filter dies silently if ANY ancestor has opacity < 1, a filter,
+   mask, clip-path or mix-blend-mode. Bloom blobs carry filter: blur() only
+   because they are SIBLINGS BEHIND the pane, never ancestors of it. Note
+   `.animate-fade-in` below animates opacity, so glass must not be nested
+   inside a fading container.
+
+   Fonts are self-hosted: a demo must not depend on the venue's wifi.
+   ───────────────────────────────────────────────────────────────────────── */
+
+@font-face {
+  font-family: "Archivo";
+  src: url("/fonts/archivo-variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/jetbrains-mono-variable.woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* ── Ramps · theme-invariant ─────────────────────────────────────────── */
+
+  /* Bottle — the brand ink and the accent. */
+  --color-bottle-50: #f5f8f5;
+  --color-bottle-100: #d6e8d8;
+  --color-bottle-200: #b6d7bb;
+  --color-bottle-300: #95c59e;
+  --color-bottle-400: #73b382;
+  --color-bottle-500: #4ca066;
+  --color-bottle-600: #388a54;
+  --color-bottle-700: #297345;
+  --color-bottle-800: #1b5c36;
+  --color-bottle-900: #0d4727;
+  --color-bottle-950: #013219;
+
+  /* Chalk — warm paper. */
+  --color-chalk-50: #f9f6f3;
+  --color-chalk-100: #e7e2db;
+  --color-chalk-200: #d3ccc2;
+  --color-chalk-300: #bfb6a8;
+  --color-chalk-400: #aca08f;
+  --color-chalk-500: #988b77;
+  --color-chalk-600: #827663;
+  --color-chalk-700: #6c6252;
+  --color-chalk-800: #574e40;
+  --color-chalk-900: #423b30;
+  --color-chalk-950: #2f2920;
+
+  /* Slate — cool UI neutral. Borders, muted text, dense tables. */
+  --color-slate-50: #f4f7f8;
+  --color-slate-100: #dbe3e4;
+  --color-slate-200: #c2cdcf;
+  --color-slate-300: #a9b7ba;
+  --color-slate-400: #90a2a5;
+  --color-slate-500: #778c90;
+  --color-slate-600: #627679;
+  --color-slate-700: #4f6063;
+  --color-slate-800: #3c4b4d;
+  --color-slate-900: #2b3739;
+  --color-slate-950: #1a2425;
+
+  /* Lime — reserved for the shell's active marker and the on-accent focus
+     ring. It is not the product accent; --color-accent is bottle. */
+  --color-lime-100: #e9fadc;
+  --color-lime-200: #dff7c4;
+  --color-lime-300: #d7f2a9;
+  --color-lime-400: #d1ed8c;
+  --color-lime-500: #cee770;
+  --color-lime-600: #b5c452;
+  --color-lime-700: #9ba23d;
+  --color-lime-800: #80812a;
+  --color-lime-900: #666318;
+
+  /* ── Semantics · LIGHT (the default; `system` falls back here) ───────── */
+  /* ── Brand · the logo's own two values ──────────────────────────────────
+     Taken from the supplied Pravar AI artwork (public/brand/), theme-invariant
+     because a logo does not change colour with the canvas:
+
+       brand-lime  the square in the mark, #B5FA59
+       brand-ai    the "AI" in the lockup, #297345 — bottle-700
+
+     brand-lime is deliberately NOT --color-accent (lime-500, #CEE770). That
+     one is the product's interactive accent and is tuned for UI contrast;
+     this one is the logo's, and the logo is not ours to re-tune. They are the
+     only two limes allowed in the app, and they never appear together. */
+  --color-brand-lime: #b5fa59;
+  --color-brand-ai: #297345;
+
+  --color-ground: #f9f6f3; /* chalk-50 */
+  --color-raised: #ffffff;
+  --color-sunken: #f1ede8;
+  --color-hair: #e7e2db; /* chalk-100 */
+  --color-hair-strong: #d3ccc2; /* chalk-200 */
+  /* The hairline is decoration and may sit below the 3:1 graphics floor —
+     a rule between two table rows is not a UI boundary. --edge is for the
+     cases where a 1px ring IS the boundary: a ghost chip, a colour swatch.
+     Solved to 3.00:1 on --raised, in the hairline's own hue so the two read
+     as one family. See tools/derive-dark-inks.mjs. */
+  --color-edge: #9b948a;
+
+  --color-accent: #1b5c36; /* bottle-800 */
+  --color-accent-hover: #0d4727;
+  --color-accent-quiet: #d6e8d8;
+  --color-on-accent: #f5f8f5;
+  /* on-teal is the foreground for the accent FILL, so it tracks on-accent.
+     The design's own --on-teal (#013219) is the deep ink that sits on the
+     shell's LIME marker — a different pairing — and using it here put dark
+     text on the dark accent button. */
+  --color-on-teal: var(--color-on-accent);
+  --color-on-ink: #f9f6f3;
+
+  --color-ink: #1a2425; /* primary text */
+  --color-ink-muted: #4f6063; /* slate-700 · AA on ground */
+  --color-ink-faint: #627679; /* slate-600 · captions only, never body.
+                                 4.79:1 on raised, 4.45:1 on ground — which
+                                 is why it is captions-only. */
+
+  /* Status — measured ink pairings. Keep the pairing. */
+  --color-success: #3d9a6b;
+  --color-success-ink: #256143; /* 6.00:1 on its tint */
+  --color-success-tint: #e4f2ea;
+  --color-warning: #b08636;
+  --color-warning-ink: #7b5e26; /* 5.41:1 */
+  --color-warning-tint: #f7eedc;
+  --color-danger: #b85147;
+  /* Text ON the danger fill. This used to be hardcoded as chalk-50 in
+     primitives.tsx, whose comment claimed danger does not flip — it does,
+     and on the lifted dark fill chalk-50 measures 2.91:1. A pairing that
+     both themes own, rather than a ramp reached for from a component. */
+  --color-on-danger: var(--color-chalk-50); /* 4.53:1 on the fill */
+  --color-danger-ink: #813932; /* 5.86:1 */
+  --color-danger-tint: #f7e7e4;
+  --color-info: #3e7fa8;
+  --color-info-ink: #245973; /* 7.17:1 */
+  --color-info-tint: #e3eff6;
+  --color-neutral: #988b77;
+
+  /* Meters. */
+  --color-band-1: #297345;
+  --color-band-2: #73b382;
+  --color-band-3: #d6e8d8;
+  --color-band-on: #988b77;
+
+  /* Risk — ORDERED BY LIGHTNESS so risk reads as intensity, not hue. It has
+     to survive greyscale, colour-blindness and a bad projector. Never
+     re-map this onto red/amber/green. */
+  --color-risk-unprofiled: #c2cdcf;
+  --color-risk-conservative: #95c59e;
+  --color-risk-moderate: #4ca066;
+  --color-risk-aggressive: #1b5c36;
+
+  /* Data-viz — one system for donut, bar, meter and band. Series order
+     carries meaning across screens; never reorder to "look better". */
+  --color-viz-1: #1b5c36;
+  --color-viz-2: #4ca066;
+  --color-viz-3: #95c59e;
+  --color-viz-4: #4f6063;
+  --color-viz-5: #90a2a5;
+  --color-viz-6: #b08636;
+  --color-viz-grid: #e7e2db;
+  --color-viz-axis: #627679;
+  --color-viz-track: #f1ede8;
+  --color-viz-target: #1a2425; /* the ideal/target marker, always ink */
+
+  /* ── Chart categories ───────────────────────────────────────────────────
+     The asset-class and sub-category palette. Separate from --viz-* on
+     purpose: the viz series is ordinal (viz-1 is the largest), these are
+     nominal and graded by FAMILY then by lightness within the family, so
+     heaviest reads as largest cap. They lived as 19 hex literals in
+     lib/insights.ts, which is the one colour pathway in the app that could
+     not answer the theme at all.
+
+     THEME-INVARIANT, deliberately. A fill owes 3:1 against its own card, and
+     these mid-to-light values already clear that on the dark card almost
+     everywhere — so there is one declaration and no pair to keep in step,
+     which is the failure mode this file has hit twice. Only a member that
+     falls under the floor gets a dark override; today that is one of them.
+
+     KNOWN GAP, light theme: nine of these sit under 3:1 on paper — cash and
+     money-market 2.07, other and treasuries 2.01, small-cap 1.94, sector
+     equity 1.70, individual stocks 2.40, commodity 2.47, mid-cap 2.48. That
+     predates this pass and is raised rather than quietly rewritten;
+     tests/theme.mjs carries it as a known gap and prints it every run. */
+  --color-cat-equity: #539d7c;
+  --color-cat-fixed-income: #988b77;
+  --color-cat-hybrid: #778c90;
+  --color-cat-cash: #a9b7ba;
+  --color-cat-commodity: #c0a15a;
+  --color-cat-other: #bfb6a8;
+  --color-cat-equity-large: #418768;
+  --color-cat-equity-multi: #539d7c;
+  --color-cat-equity-mid: #6ab391;
+  --color-cat-equity-small: #7fc9a7;
+  --color-cat-equity-sector: #94d4b5;
+  --color-cat-equity-intl: #9b8bb5;
+  --color-cat-equity-direct: #6cb694;
+  --color-cat-treasuries: #bfb6a8;
+  --color-cat-money-market: #a9b7ba;
+  /* The two trade-row colours. */
+  --color-cat-sell: #9b7b5b;
+  --color-cat-buy: #3a5a6c;
+
+  /* Glass — LIGHT ONLY. Chrome and overlays; anything holding a figure
+     stays on --raised. See rule 1 and the backdrop-filter warning above. */
+  --color-glass: rgba(255, 255, 255, 0.72);
+  --color-glass-clear: rgba(255, 255, 255, 0.42);
+  --color-glass-hair: rgba(255, 255, 255, 0.7);
+  --color-scrim: rgba(26, 36, 37, 0.4);
+
+  /* Blooms — a CLOSED SET OF THREE, all above OKLCH L 0.90. No photography,
+     no video, no user imagery, no gradient meshes, no dark section behind
+     glass. The contrast maths depends on the backdrop being ours. */
+  --color-bloom-1: #c7ead2;
+  --color-bloom-2: #d0e7f4;
+  --color-bloom-3: #e2efbb;
+
+  /* Focus ring colours. Light: the ring is bottle; the accent fill is dark,
+     so the on-accent ring is lime. */
+  --color-focus: #1b5c36;
+  --color-focus-inv: #cee770;
+  --color-focus-on-accent: #cee770;
+  --color-focus-danger: #813932;
+
+  /* ── Legacy aliases ─────────────────────────────────────────────────────
+     The component files still style through these names. Repointing them
+     here moves the whole app onto Chalk·Glass from this file alone, with no
+     component churn. */
+  --color-teal: var(--color-accent); /* primary — buttons, links, active nav */
+  --color-teal-dark: var(--color-accent-hover);
+  --color-teal-light: var(--color-accent-quiet);
+  --color-cream: var(--color-ground);
+  --color-cream-dark: var(--color-hair);
+  /* accent-ink is the one lime dark enough to carry text on paper. It moves
+     to lime-900 (5.80:1 on chalk-50); lime-800 in this ramp is #80812A,
+     which measures 3.83:1 and would fail AA at its 15 call sites. */
+  --color-accent-ink: var(--color-lime-900);
+  --color-copper: var(--color-accent-ink);
+  --color-copper-light: var(--color-lime-500);
+  --color-ink-light: var(--color-ink-muted);
+
+  /* ── The shell · theme-invariant ─────────────────────────────────────────
+     The shell is dark in BOTH themes. That is a signature, not a bug: it is
+     the persona's ground truth and does not follow the canvas. Declared once
+     here so a per-theme value cannot collide with --color-inv-raised in
+     light mode (identical hex, 1:1 — the tenant chip and logo tile vanish). */
+  --color-shell: #0c1314;
+  --color-inv-ground: #0c1314;
+  --color-inv-raised: #1a2425;
+  --color-inv-hair: #2b3739;
+  --color-inv-ink: #f4f7f8;
+  --color-inv-ink-muted: #a9b7ba;
+  --color-inv-on-accent: #013219;
+
+  /* ── Inverted panel ─────────────────────────────────────────────────── */
+  --color-inv-bg: #0c1314;
+  --color-inv-field: #1a2425;
+  --color-inv-text: #f4f7f8;
+  --color-inv-dim: #a9b7ba;
+  --color-inv-accent: #cee770;
+  --color-inv-btn-bg: #cee770;
+  --color-inv-btn-text: #013219;
+  --color-inv-pos: #5cb98a;
+  --color-inv-neg: #d9756a;
+
+  /* ── Type ───────────────────────────────────────────────────────────── */
+  --font-sans: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-serif: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+
+  --text-micro: 10.5px;
+  --text-label: 11.5px;
+  --text-caption: 12px;
+  --text-small: 12px;
+  --text-body: 13px;
+  --text-body-lg: 14px;
+  --text-lead: 14px;
+  --text-h4: 16px;
+  --text-title: 16px;
+  --text-h3: 20px;
+  --text-h2: 25px;
+  --text-h1: 31px;
+  --text-display: 40px;
+
+  --leading-tight: 1.15;
+  --leading-table: 1.35;
+  --leading-body: 1.55;
+
+  --tracking-eyebrow: 0.12em;
+  --tracking-display: -0.02em;
+
+  /* ── Geometry ───────────────────────────────────────────────────────── */
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 4px; /* tile */
+  --radius-xl: 6px; /* card */
+  --radius-2xl: 8px; /* panel */
+  --radius-chip: 4px;
+  --radius-tile: 4px;
+  --radius-card: 6px;
+  --radius-panel: 8px;
+  /* Pill is for avatars and status dots only — not chips. A chip is a
+     label, not a capsule. */
+  --radius-pill: 999px;
+
+  /* NO numeric --spacing-N here, deliberately.
+     In Tailwind v4 that namespace IS h-N / w-N / p-N / gap-N, computed from a
+     0.25rem base. The design's 4px authoring scale agrees with it up to 6 and
+     then diverges (32/40/56 against 28/32/36) — so declaring the design steps
+     here silently redefined h-7, h-8 and h-9 for the whole app. h-9 rendered at
+     56px, which is how a 36px control ended up half again too tall.
+     The design's larger steps are authoring guidance, not utilities; nothing
+     references them by name, so Tailwind's scale stands. */
+
+  /* Density — one policy, three levels. Table owns the switch; every dense
+     surface reads these instead of styling locally. */
+  --spacing-row-comfortable: 40px;
+  --spacing-row-compact: 32px;
+  --spacing-row-dense: 26px;
+  --spacing-row: 40px; /* legacy alias */
+
+  --shadow-tile: 0 1px 2px rgba(26, 36, 37, 0.05);
+  --shadow-card: 0 1px 2px rgba(26, 36, 37, 0.05), 0 8px 24px rgba(26, 36, 37, 0.05);
+  --shadow-panel: 0 8px 32px rgba(25, 40, 32, 0.09);
+  --shadow-lift: var(--shadow-card);
+  --shadow-lift-lg: var(--shadow-panel);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Dark. One selector, one source. Every token above that can flip, flips
+   here — see rule 2. Glass resolves to opaque and blooms to zero opacity,
+   so a glass component needs no branch (rule 4).
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-ground: #111a1b;
+  --color-raised: #1a2425; /* slate-950 */
+  --color-sunken: #0c1314;
+  --color-hair: #2b3739; /* slate-900 */
+  --color-hair-strong: #3c4b4d; /* slate-800 */
+  --color-edge: #5f6f71; /* 3.02:1 on --raised */
+
+  --color-accent: #73b382; /* bottle-400 — lifted for contrast on dark */
+  --color-accent-hover: #95c59e;
+  --color-accent-quiet: #1b2e24;
+  --color-on-accent: #013219;
+  --color-on-teal: var(--color-on-accent);
+  /* THE white-on-white chip. --color-ink flips to near-white here, and this
+     repeated the light value, so `bg-ink text-on-ink` (CHIP.done) rendered
+     paper on paper at 1.00:1 — visible as a blank "BRIEF READY" chip and a
+     blank count on the Needs Attention tab. It has to flip with its ground. */
+  --color-on-ink: #013219; /* bottle-950 · 13.26:1 on --ink */
+
+  --color-ink: #f4f7f8;
+  --color-ink-muted: #a9b7ba; /* slate-300 */
+  --color-ink-faint: #90a2a5; /* slate-400 */
+
+  /* Status — lifted fills; tints become low-alpha washes, not lightened
+     fills.
+
+     THE PAIRING IS KEPT, AND NOW IT ACTUALLY IS. The inks here used to run
+     9.8–11.2 against their own tint where light runs 5.2–6.8, so quiet
+     metadata, status and strong ink all arrived at the same volume and the
+     hierarchy light has went flat. Each ink below is the LIGHT ink's hue and
+     chroma at the lightness that reproduces light's own ratio — solved, not
+     picked. tools/derive-dark-inks.mjs prints the working. */
+  --color-success: #5cb98a;
+  --color-success-ink: #77b491; /* 6.38:1 on its tint · light 6.34 */
+  --color-success-tint: #14291f;
+  --color-warning: #d2a85a;
+  --color-warning-ink: #b0925a; /* 5.26:1 · light 5.25 */
+  --color-warning-tint: #2a2317;
+  --color-danger: #d9756a;
+  /* The fill lifts, so its foreground goes the other way. */
+  --color-on-danger: var(--color-bottle-950); /* 4.51:1 on the fill */
+  --color-danger-ink: #e29086; /* 6.83:1 · light 6.83 */
+  --color-danger-tint: #2b1917;
+  --color-info: #69a9ce;
+  --color-info-ink: #7ab0cd; /* 6.54:1 · light 6.52 */
+  --color-info-tint: #152730;
+  --color-neutral: #90a2a5;
+
+  --color-band-1: #73b382;
+  --color-band-2: #388a54;
+  --color-band-3: #1b2e24;
+  --color-band-on: #627679;
+
+  --color-risk-unprofiled: #3c4b4d;
+  --color-risk-conservative: #388a54;
+  --color-risk-moderate: #4ca066;
+  --color-risk-aggressive: #95c59e;
+
+  --color-viz-1: #95c59e;
+  --color-viz-2: #4ca066;
+  --color-viz-3: #297345;
+  --color-viz-4: #a9b7ba;
+  --color-viz-5: #627679;
+  --color-viz-6: #d2a85a;
+  --color-viz-grid: #2b3739;
+  --color-viz-axis: #90a2a5;
+  --color-viz-track: #0c1314;
+  --color-viz-target: #f4f7f8;
+
+  /* The one chart category that cannot stay theme-invariant: the Buy row's
+     cool blue measures 2.16:1 on this card, under the 3:1 a fill owes. Same
+     hue, lifted until it clears. */
+  --color-cat-buy: #4f7082; /* 3.00:1 on --raised */
+
+  /* Glass is NOT available on dark — these resolve to opaque so any
+     component reading them still renders correctly. */
+  --color-glass: #1a2425;
+  --color-glass-clear: #1a2425;
+  --color-glass-hair: #2b3739;
+  --color-scrim: rgba(0, 0, 0, 0.5);
+
+  --color-bloom-1: #111a1b;
+  --color-bloom-2: #111a1b;
+  --color-bloom-3: #111a1b;
+
+  /* Focus · dark: bottle-800 is 2.22:1 on this ground, so the ring must
+     invert. The accent is LIGHT here, so the on-accent ring goes deep
+     instead of lime — the lime ring on a dark accent fill is 1.80:1. */
+  --color-focus: #cee770;
+  --color-focus-inv: #cee770;
+  --color-focus-on-accent: #013219;
+  --color-focus-danger: #f0c5bf;
+
+  /* Legacy aliases follow the semantics above. */
+  --color-teal: var(--color-accent);
+  --color-teal-dark: var(--color-accent-hover);
+  --color-teal-light: var(--color-accent-quiet);
+  --color-cream: var(--color-ground);
+  --color-cream-dark: var(--color-hair);
+  --color-accent-ink: #a8a65e; /* 6.26:1 on --raised · light 6.24. lime-300
+                                 measured 12.97 and shouted over everything. */
+  --color-copper: var(--color-accent-ink);
+  --color-copper-light: var(--color-lime-400);
+  --color-ink-light: var(--color-ink-muted);
+
+  --color-inv-bg: #0c1314;
+  --color-inv-field: #1a2425;
+  --color-inv-text: #f4f7f8;
+  --color-inv-dim: #a9b7ba;
+  --color-inv-accent: #cee770;
+  --color-inv-btn-bg: #cee770;
+  --color-inv-btn-text: #013219;
+  --color-inv-pos: #5cb98a;
+  --color-inv-neg: #d9756a;
+
+  --shadow-tile: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-panel: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --shadow-lift: var(--shadow-card);
+  --shadow-lift-lg: var(--shadow-panel);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   The shell is theme-invariant. Declared ONCE, not per theme: it is dark in
+   both, and a per-theme value collided with --inv-raised in light mode
+   (identical hex, 1:1 — the tenant chip and the logo tile disappeared).
+   The shell is the persona's ground truth; it does not follow the canvas.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root,
+:root[data-theme="light"],
+:root[data-theme="dark"] {
+  --shell: #0c1314;
+  --inv-ground: #0c1314;
+  --inv-raised: #1a2425;
+  --inv-hair: #2b3739;
+  --inv-ink: #f4f7f8;
+  --inv-ink-muted: #a9b7ba;
+  --inv-accent: #cee770; /* lime-500 — the shell's active marker */
+  --inv-on-accent: #013219;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Unprefixed bridge. The design files write var(--accent), var(--raised),
+   var(--ink-muted) and so on, so markup lifted from them resolves here
+   without translation. These generate no Tailwind utilities (no namespace),
+   which is deliberate: this is an import shim, not a second styling API.
+   Every entry is a var() of a --color-* token, so it inherits the theme
+   flip for free and needs no dark twin.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --ground: var(--color-ground);
+  --raised: var(--color-raised);
+  --sunken: var(--color-sunken);
+  --hair: var(--color-hair);
+  --hair-strong: var(--color-hair-strong);
+  --accent: var(--color-accent);
+  --accent-hover: var(--color-accent-hover);
+  --accent-quiet: var(--color-accent-quiet);
+  --on-accent: var(--color-on-accent);
+  --on-teal: var(--color-on-teal);
+  --on-ink: var(--color-on-ink);
+  --ink: var(--color-ink);
+  --ink-muted: var(--color-ink-muted);
+  --ink-faint: var(--color-ink-faint);
+
+  --success: var(--color-success);
+  --success-ink: var(--color-success-ink);
+  --success-tint: var(--color-success-tint);
+  --warning: var(--color-warning);
+  --warning-ink: var(--color-warning-ink);
+  --warning-tint: var(--color-warning-tint);
+  --danger: var(--color-danger);
+  --danger-ink: var(--color-danger-ink);
+  --danger-tint: var(--color-danger-tint);
+  --info: var(--color-info);
+  --info-ink: var(--color-info-ink);
+  --info-tint: var(--color-info-tint);
+
+  --band-1: var(--color-band-1);
+  --band-2: var(--color-band-2);
+  --band-3: var(--color-band-3);
+  --risk-unprofiled: var(--color-risk-unprofiled);
+  --risk-conservative: var(--color-risk-conservative);
+  --risk-moderate: var(--color-risk-moderate);
+  --risk-aggressive: var(--color-risk-aggressive);
+
+  --viz-1: var(--color-viz-1);
+  --viz-2: var(--color-viz-2);
+  --viz-3: var(--color-viz-3);
+  --viz-4: var(--color-viz-4);
+  --viz-5: var(--color-viz-5);
+  --viz-6: var(--color-viz-6);
+  --viz-grid: var(--color-viz-grid);
+  --viz-axis: var(--color-viz-axis);
+  --viz-track: var(--color-viz-track);
+  --viz-target: var(--color-viz-target);
+
+  --glass: var(--color-glass);
+  --glass-clear: var(--color-glass-clear);
+  --glass-hair: var(--color-glass-hair);
+  --bloom-1: var(--color-bloom-1);
+  --bloom-2: var(--color-bloom-2);
+  --bloom-3: var(--color-bloom-3);
+
+  /* Blur and bloom opacity are plain values, not colours — no namespace
+     generates backdrop-filter, so these are consumed by the @utility
+     definitions below and by inline styles. */
+  --glass-blur: blur(20px) saturate(1.4);
+  --glass-blur-clear: blur(28px) saturate(1.5);
+  --bloom-opacity: 1;
+
+  --focus-width: 2px;
+  --focus-offset: 2px;
+  --focus-ring: var(--focus-width) solid var(--color-focus);
+  --focus-ring-inv: var(--focus-width) solid var(--color-focus-inv);
+  --focus-ring-on-accent: var(--focus-width) solid var(--color-focus-on-accent);
+  --focus-ring-danger: var(--focus-width) solid var(--color-focus-danger);
+
+  --track-eyebrow: var(--tracking-eyebrow);
+  --track-display: var(--tracking-display);
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-med: 200ms;
+  --dur-slow: 320ms;
+
+  --density-row-comfortable: 40px;
+  --density-row-compact: 32px;
+  --density-row-dense: 26px;
+}
+
+:root[data-theme="dark"] {
+  /* Blur is off on dark — glass is light-only (rule 4) — and the blooms
+     are hidden rather than recoloured. */
+  --glass-blur: none;
+  --glass-blur-clear: none;
+  --bloom-opacity: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Glass utilities. backdrop-filter cannot come from a token — no Tailwind
+   namespace generates it — so the tier is a utility that pairs the surface
+   token with its blur. @utility (not a plain class) so it composes with
+   variants.
+   ───────────────────────────────────────────────────────────────────────── */
+
+@utility glass {
+  background: var(--color-glass);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+@utility glass-clear {
+  background: var(--color-glass-clear);
+  -webkit-backdrop-filter: var(--glass-blur-clear);
+  backdrop-filter: var(--glass-blur-clear);
+}
+
+@utility scrim {
+  background: var(--color-scrim);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Focus. Every interactive element gets a visible ring on :focus-visible —
+   never :focus, so a mouse click does not paint one. Four variants because
+   three could not clear 3:1 everywhere:
+
+     default          bottle on light, lime on dark (the ring inverts)
+     [data-surface="shell"]  lime, theme-invariant, because the shell is
+                             dark in both themes
+     [data-on-accent] inverts too, and is NOT the same as the shell ring:
+                      a lime ring on a dark-theme accent fill is 1.80:1
+     .destructive     for destructive controls only
+
+   Never `outline: none` without an equally visible replacement in the same
+   rule, and never communicate focus by border-colour alone.
+   ───────────────────────────────────────────────────────────────────────── */
+
+*:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+[data-surface="shell"] *:focus-visible {
+  outline: var(--focus-ring-inv);
+}
+
+[data-on-accent]:focus-visible,
+[data-on-accent] *:focus-visible {
+  outline: var(--focus-ring-on-accent);
+}
+
+.destructive:focus-visible {
+  outline: var(--focus-ring-danger);
+}
+
+/* Table rows pull the ring inside so it never clips the table edge. */
+tr:focus-visible,
+tbody tr:focus-visible {
+  outline-offset: -2px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-ground);
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  /* Every screen in this product is figures in columns. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Prose is the exception — proportional figures read better in a sentence. */
+p,
+li {
+  font-variant-numeric: normal;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ⚠ This animates opacity, which makes the element a backdrop root for as
+   long as it runs — and `both` means the transform persists afterwards. Do
+   not nest a glass surface inside a fading container. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease both;
+}
+
+@keyframes ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-ring-spin {
+  animation: ring-spin 1.6s linear infinite;
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 1.8s ease-in-out infinite;
+}
+
+/* The drawer enters from the edge it lives on, so the motion says where it came
+   from and where closing will put it back. */
+@keyframes slide-in {
+  from {
+    transform: translateX(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-hair-strong);
+  border-radius: var(--radius-sm);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}

@@ -1,0 +1,188 @@
+/* Gallery chrome only. Every value here is a token reference — the same
+   clause the template contract puts on a theme file applies to this page:
+   nothing names a colour. */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--color-ground);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
+.gallery-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 32px;
+  background: var(--color-shell);
+  color: var(--color-inv-ink, var(--color-ground));
+  border-bottom: 1px solid var(--color-hair-strong);
+}
+
+.gallery-header h1 {
+  font-size: var(--text-h3);
+  margin: 0;
+  letter-spacing: var(--tracking-display);
+}
+
+.gallery-header p {
+  margin: 2px 0 0;
+  font-size: var(--text-caption);
+  color: var(--color-inv-ink-muted, var(--color-ink-muted));
+}
+
+.theme-toggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius-card);
+  background: var(--color-inv-raised, var(--color-sunken));
+}
+
+.theme-toggle button {
+  font: inherit;
+  font-size: var(--text-caption);
+  padding: 6px 12px;
+  border: none;
+  border-radius: var(--radius-chip);
+  background: transparent;
+  color: var(--color-inv-ink-muted, var(--color-ink-muted));
+  cursor: pointer;
+}
+
+.theme-toggle button[aria-pressed='true'] {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: 600;
+}
+
+.gallery-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.gallery-section {
+  padding: 32px 0;
+  border-bottom: 1px solid var(--color-hair);
+}
+
+.gallery-section:last-child {
+  border-bottom: none;
+}
+
+.gallery-section h2 {
+  font-size: var(--text-h2);
+  margin: 0 0 6px;
+  letter-spacing: var(--tracking-display);
+}
+
+.gallery-rule {
+  margin: 0 0 20px;
+  color: var(--color-ink-muted);
+  font-size: var(--text-caption);
+  max-width: 72ch;
+}
+
+.gallery-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.gallery-subhead {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--color-ink-faint);
+  margin: 0 0 10px;
+}
+
+.swatch {
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  border: 1px solid var(--color-hair-strong);
+  background: var(--color-raised);
+}
+
+.swatch-fill {
+  height: 56px;
+}
+
+.swatch-meta {
+  padding: 8px 10px;
+  font-size: var(--text-micro);
+}
+
+.swatch-name {
+  font-family: var(--font-mono);
+  color: var(--color-ink);
+  display: block;
+  word-break: break-all;
+}
+
+.swatch-value {
+  font-family: var(--font-mono);
+  color: var(--color-ink-faint);
+  display: block;
+  margin-top: 2px;
+  word-break: break-all;
+}
+
+.type-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-hair);
+}
+
+.type-row:last-child {
+  border-bottom: none;
+}
+
+.type-row .label {
+  width: 110px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  color: var(--color-ink-faint);
+}
+
+.figure-demo {
+  font-family: var(--font-mono);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.figure-demo-wrong {
+  font-family: var(--font-sans);
+  text-align: left;
+}
+
+.wrong-label {
+  color: var(--color-danger-ink);
+  font-size: var(--text-micro);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+}
